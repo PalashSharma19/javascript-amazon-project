@@ -1,7 +1,7 @@
 let productsHTML='';
 products.forEach(product => {
   productsHTML+=`
-  <div class="product-container">
+        <div class="product-container">
           <div class="product-image-container">
             <img class="product-image" src=${product.image}>
           </div>
@@ -23,7 +23,7 @@ products.forEach(product => {
           </div>
 
           <div class="product-quantity-container">
-            <select>
+            <select class="js-${product.id}">
               <option selected value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -39,7 +39,7 @@ products.forEach(product => {
 
           <div class="product-spacer"></div>
 
-          <div class="added-to-cart">
+          <div class="added-to-cart js-added-${product.id}">
             <img src="images/icons/checkmark.png">
             Added
           </div>
@@ -51,10 +51,26 @@ products.forEach(product => {
   `
 });
 document.querySelector(".js-products-grid").innerHTML=productsHTML;
+const addedMessageTimeouts = {};
 document.querySelectorAll(".js-addtocart").forEach((button)=>{
   button.addEventListener('click',()=>{
-    const productId = button.dataset.productId;
+    const { productId } = button.dataset;
     let matchingItem;
+
+    //added message functionality in the code
+    const addedMessage = document.querySelector(`.js-added-${productId}`);
+    addedMessage.classList.add('added-to-cart-visible');
+
+
+    const previousTimeoutID = addedMessageTimeouts[productId];
+    if(previousTimeoutID)
+      clearTimeout(previousTimeoutID);
+
+    const timeoutID = setTimeout(()=>{addedMessage.classList.remove('added-to-cart-visible')},2000);
+
+    addedMessageTimeouts[productId]=timeoutID;
+
+    const itemQuantity = Number(document.querySelector(`.js-${productId}`).value);
     cart.forEach((item)=>{
       if(productId===item.productId)
         {
@@ -63,17 +79,17 @@ document.querySelectorAll(".js-addtocart").forEach((button)=>{
       })
       if(matchingItem)
       {
-        matchingItem.quantity++;
+        matchingItem.itemQuantity+=itemQuantity;
       }
       else{
         cart.push({
           productId,
-          quantity: 1
+          itemQuantity
         })
       }
       let cartQuantity=0;
       cart.forEach((item)=> {
-        cartQuantity+=item.quantity;
+        cartQuantity+=item.itemQuantity;
       })
 
     document.querySelector(".js-cart-quantity").innerHTML=cartQuantity;
