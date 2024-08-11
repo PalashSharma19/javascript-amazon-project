@@ -1,4 +1,4 @@
-import {cart} from '../data/cart.js';
+import {cart, addToCart} from '../data/cart.js';
 import {products} from '../data/products.js';
 
 let productsHTML='';
@@ -55,50 +55,48 @@ products.forEach(product => {
 });
 document.querySelector(".js-products-grid").innerHTML=productsHTML;
 const addedMessageTimeouts = {};
-document.querySelectorAll(".js-addtocart").forEach((button)=>{
-  button.addEventListener('click',()=>{
-    const { productId } = button.dataset;
-    let matchingItem;
 
-    //added message functionality in the code
+
+
+
+function displayAdded(productId){
     const addedMessage = document.querySelector(`.js-added-${productId}`);
+
     addedMessage.classList.add('added-to-cart-visible');
-
-
+    
     const previousTimeoutID = addedMessageTimeouts[productId];
+     
     if(previousTimeoutID)
-      clearTimeout(previousTimeoutID);
+     clearTimeout(previousTimeoutID);
 
     const timeoutID = setTimeout(()=>{addedMessage.classList.remove('added-to-cart-visible')},2000);
 
     addedMessageTimeouts[productId]=timeoutID;
+}
 
-    const itemQuantity = Number(document.querySelector(`.js-${productId}`).value);
-    cart.forEach((item)=>{
-      if(productId===item.productId)
-        {
-          matchingItem=item;
-        }
-      })
-      if(matchingItem)
-      {
-        matchingItem.itemQuantity+=itemQuantity;
-      }
-      else{
-        cart.push({
-          productId,
-          itemQuantity
-        })
-      }
-      let cartQuantity=0;
-      cart.forEach((item)=> {
-        cartQuantity+=item.itemQuantity;
-      })
+function updateCartQuantity()
+{
+  let cartQuantity=0;
+    cart.forEach((cartItem)=> {
+      cartQuantity+=cartItem.itemQuantity;
+    })
 
     document.querySelector(".js-cart-quantity").innerHTML=cartQuantity;
 
     console.log(cartQuantity);
     console.log(cart);
+}
+
+
+document.querySelectorAll(".js-addtocart").forEach((button)=>{
+  button.addEventListener('click',()=>{
+    const { productId } = button.dataset;
+
+    addToCart(productId);
+
+    displayAdded(productId);
+    
+    updateCartQuantity();
   })
   
 
