@@ -17,11 +17,20 @@
       <option value="10">10</option>
     </select>
     <button class="js-button">click</button>
+    <button class="js-button">click</button>
+    <button class="js-button">click</button>
+    <button class="js-button">click</button>
+    <button class="js-button">click</button>
+    <button class="js-button">click</button>
+    <button class="js-button">click</button>
     <script>
       document.querySelector(".js-button").addEventListener('click',()=>{
         console.log(document.querySelector(".dropdown").value);
       })
-      
+      const array = [1,2,3,4,5,6,7];
+      array.forEach((element)=>{
+        console.log(element);
+      })
     </script>
   </body>
 </html>
