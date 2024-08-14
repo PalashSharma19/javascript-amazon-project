@@ -2,8 +2,9 @@ import { calculateCartQuantity, cart, removeFromCart, updateQuantity,updateDeliv
 import { products, getProduct } from '../../data/products.js';
 import { formatCurrency } from '../utils/money.js';
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
-import { deliveryOptions, getDeliveryOptions } from '../../data/deliveryOptions.js';
+import { calculateDeliveryOptions, deliveryOptions, getDeliveryOptions } from '../../data/deliveryOptions.js';
 import { renderPaymentSummary } from './paymentSummary.js';
+import { renderCheckoutHeader } from './checkoutHeader.js';
 
 
 export function renderOrderSummary(){
@@ -64,8 +65,7 @@ cart.forEach((cartItem)=>{
 function deliveryOptionsHTML(matchingProduct,cartItem){
   let html='';
   deliveryOptions.forEach((deliveryOption)=>{
-    const today = dayjs();
-    const deliveryDate = today.add(deliveryOption.deliveryDays,'days');
+    const deliveryDate = calculateDeliveryOptions(deliveryOption);
     const dateString = deliveryDate.format('dddd, MMMM D');
     const priceString=(deliveryOption.deliveryPrice === 0)? 'FREE':`$${formatCurrency(deliveryOption.deliveryPrice)} -`;
     const isChecked = deliveryOption.id === cartItem.deliveryOptionId;
@@ -88,20 +88,14 @@ function deliveryOptionsHTML(matchingProduct,cartItem){
   });
   return html;
 }
-function updateCartQuantity(){
-  const cartQuantity=calculateCartQuantity();
-  document.querySelector(".js-checkout-middle-header").innerHTML=`${cartQuantity} items`;
-}
 
 document.querySelector(".js-cart-list").innerHTML=cartItemHTML;
-updateCartQuantity();
+renderCheckoutHeader();
 document.querySelectorAll(".js-delete").forEach((link)=>{
   link.addEventListener('click',()=>{
     const { productId }= link.dataset;
     removeFromCart(productId);
-    const container=document.querySelector(`.js-product-id-${productId}`);
-    container.remove();
-    updateCartQuantity();
+    renderOrderSummary();
     renderPaymentSummary();
   })
 })
@@ -139,7 +133,7 @@ function saveNewQuantity(link){
         updateQuantity(productId,currentCartQuantity);
       }
     })
-    updateCartQuantity();
+    renderCheckoutHeader();
     
     const container=document.querySelector(`.js-product-id-${productId}`);
     container.classList.remove('is-editing-quantity');
