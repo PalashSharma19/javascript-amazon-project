@@ -103,6 +103,7 @@ document.querySelectorAll(".js-delete").forEach((link)=>{
     const container=document.querySelector(`.js-product-id-${productId}`);
     container.remove();
     updateCartQuantity();
+    renderPaymentSummary();
   })
 })
 document.querySelectorAll(".js-update").forEach((link)=>{
