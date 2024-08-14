@@ -91,7 +91,6 @@ function deliveryOptionsHTML(matchingProduct,cartItem){
 function updateCartQuantity(){
   const cartQuantity=calculateCartQuantity();
   document.querySelector(".js-checkout-middle-header").innerHTML=`${cartQuantity} items`;
-  console.log(cart);
 }
 
 document.querySelector(".js-cart-list").innerHTML=cartItemHTML;
